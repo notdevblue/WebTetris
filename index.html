@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>웹트리스</title>
+    <link rel="stylesheet" href="/public/app.css">
+    <script src="/App.js" type="module"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="page-container">
+            <div id="registerPage" class="page">가입페이지</div>
+            <div id="loginPage" class="page">
+                <h2>로그인페이지</h2>
+                <div class="form">
+                    <input type="text" placeholder="아이디를 입력하세요">
+                    <button id="btnLogin">로그인</button>
+                </div>
+            </div>
+            <div id="gamePage" class="page">
+                <h2>게임페이지</h2>
+                <div class="game-container">
+                    <div class="game-box">
+                        <canvas id="gameCanvas" width="354" height="704"></canvas>
+                    </div>
+                    <div class="info-box">
+                        여기에 다양한 정보 입력
+                        <button id="btnStart">게임시작</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
