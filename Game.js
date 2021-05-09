@@ -10,8 +10,9 @@ export class Game {
         this.frame = null;
         this.player = null; //가독성을 위한 코드
         this.arr = [];
-        this.addKeyEvent(); // 한번만 실행해야 함 (키 한번씩 누를때 두번 움직일 수 있ㅇ,ㅁ)
+        this.addKeyEvent(); // 한번만 실행해야 함 (키 한번씩 누를때 두번 움직일 수 있음)
 
+        this.score = 0;
         this.time = 2000;
         this.currentTime = 0;
     }
@@ -87,6 +88,12 @@ export class Game {
 
             if (full) {
                 this.lineRevmove(i); // i 윗줄을 전부 내림
+                console.log(`점수: ${++this.score}`);
+
+                if (this.time > 250) {
+                    this.time -= 250;
+                }
+
                 ++i;
             }
         }

@@ -42,7 +42,7 @@ export class Player {
 
         this.colorSet = ["#0000e8", "#00e800", "#00e8e8", "#e89b00", "#e8e800", "#9900e7", "#e80000"];
 
-        let blockSeq = [];
+        this.blockSeq = [];
         let temp = [];
         for (let i = 0; i < this.blockSet.length; ++i) {
             temp.push(i);
