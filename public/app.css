@@ -34,4 +34,60 @@
 
 .game-container {
     display: flex;
+    position: relative;
+}
+
+.info-box {
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.row-box {
+    display: flex;
+    justify-content: space-between;
+    width: 300px;
+    margin-bottom: 10px;
+}
+
+.next-block {
+    border: 1px solid #ddd;
+    height: 110px;
+    width: 110px;
+}
+
+.score-box {
+    border: 1px solid #ddd;
+    height: 110px;
+    width: 150px;
+    font-size: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#btnStart {
+    border: 1px solid rgb(17, 64, 192);
+    background-color: rgb(45, 87, 201);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 5px;
+    font-size: 20px;
+}
+
+#gameOverBox {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: all 0.5s;
+}
+
+#gameOverBox.on {
+    opacity: 1;
+}
+
+#gameOverBox>h2 {
+    font-size: 50px;
 }

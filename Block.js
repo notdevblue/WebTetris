@@ -1,8 +1,8 @@
 export class Block {
-    constructor(x, y) {
+    constructor(x, y, size = 35) {
         this.x = x;
         this.y = y;
-        this.size = 35;
+        this.size = size;
         this.padding = 2;
 
         this.fill = false;

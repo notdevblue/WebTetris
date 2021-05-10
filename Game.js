@@ -13,13 +13,24 @@ export class Game {
         this.addKeyEvent(); // 한번만 실행해야 함 (키 한번씩 누를때 두번 움직일 수 있음)
 
         this.score = 0;
+        this.scoreBox = document.querySelector(".score-box");
         this.time = 2000;
         this.currentTime = 0;
+
+        this.gameOverPanel = document.querySelector("#gameOverBox");
+        this.gameOver = false;
+    }
+
+    setGameOver() {
+        this.gameOver = true;
+        clearInterval(this.frame);
+        this.gameOverPanel.classList.add("on");
+        this.render();
     }
 
     addKeyEvent() {
         document.addEventListener("keydown", e => {
-            if (this.player == null) return;
+            if (this.player == null || this.gameOver) return;
             if (e.keyCode == 37) {
                 this.player.moveLeft();
             } else if (e.keyCode == 39) {
@@ -51,9 +62,15 @@ export class Game {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.arr.forEach(row => row.forEach(item => item.render(this.ctx)));
+
+        this.scoreBox.innerHTML = `${this.score} 점`;
+
+        this.player.render(this.ctx);
     }
 
     start() {
+        this.gameOver = false;
+        this.gameOverPanel.classList.remove("on");
         if (this.frame != null) {
             clearInterval(this.frame);
         }
@@ -88,13 +105,18 @@ export class Game {
 
             if (full) {
                 this.lineRevmove(i); // i 윗줄을 전부 내림
-                console.log(`점수: ${++this.score}`);
-
-                if (this.time > 250) {
-                    this.time -= 250;
-                }
-
+                this.addScore();
                 ++i;
+            }
+        }
+    }
+
+    addScore() {
+        ++this.score;
+        if (this.score % 5 == 0 && this.time >= 100) {
+            this.time -= 300;
+            if (this.time < 100) {
+                time = 100;
             }
         }
     }
