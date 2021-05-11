@@ -1,25 +1,28 @@
 {
-  "name": "webtetris",
-  "version": "1.0.0",
-  "description": "웹개발 동아리 테트리스 프로젝트",
-  "main": "App.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/notdevblue/WebTetris.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/notdevblue/WebTetris/issues"
-  },
-  "homepage": "https://github.com/notdevblue/WebTetris#readme",
-  "keywords": [],
-  "dependencies": {
-    "express": "^4.17.1",
-    "mysql2": "^2.2.5",
-    "socket.io": "^4.1.0"
-  }
+    "name": "webtetris",
+    "version": "1.0.0",
+    "description": "웹개발 동아리 테트리스 프로젝트",
+    "main": "App.js",
+    "scripts": {
+        "start": "nodemon Server.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/notdevblue/WebTetris.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/notdevblue/WebTetris/issues"
+    },
+    "homepage": "https://github.com/notdevblue/WebTetris#readme",
+    "keywords": [],
+    "dependencies": {
+        "express": "^4.17.1",
+        "mysql2": "^2.2.5",
+        "socket.io": "^4.1.0"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.7"
+    }
 }

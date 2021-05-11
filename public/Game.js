@@ -20,7 +20,6 @@ export class Game {
         this.gameOverPanel = document.querySelector("#gameOverBox");
         this.gameOver = false;
     }
-
     setGameOver() {
         this.gameOver = true;
         clearInterval(this.frame);

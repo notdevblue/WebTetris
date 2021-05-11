@@ -6,21 +6,37 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>웹트리스</title>
-    <link rel="stylesheet" href="/public/app.css">
+    <link rel="stylesheet" href="/app.css">
     <script src="/App.js" type="module"></script>
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 
 <body>
     <div class="container">
         <div class="page-container">
-            <div id="registerPage" class="page">가입페이지</div>
+
             <div id="loginPage" class="page">
-                <h2>로그인페이지</h2>
-                <div class="form">
-                    <input type="text" placeholder="아이디를 입력하세요">
-                    <button id="btnLogin">로그인</button>
+                <h2 class="mb-20">로그인페이지</h2>
+                <div class="login-form form mb-20">
+                    <input type="text" id="loginEmail" class="form-control" placeholder="이메일을 입력하세요">
+                    <input type="password" id="loginPassword" class="form-control" placeholder="비밀번호를 입력하세요">
+                    <button id="btnLogin" class="btn btn-blue">로그인</button>
+                </div>
+
+                <h2 class="mb-20">회원가입</h2>
+                <div class="register-form form">
+                    <input class="form-control" id="registerEmail" type="text" placeholder="이메일을 입력하세요">
+                    <input class="form-control" id="registerName" type="text" placeholder="이름을 입력하세요">
+                    <input class="form-control" id="registerPass" type="password" placeholder="비밀번호를 입력하세요">
+                    <input class="form-control" id="registerPassConfirm" type="password" placeholder="비밀번호 확인을 입력하세요">
+                    <button class="btn btn-red" id="btnRegister">회원가입</button>
                 </div>
             </div>
+
+            <div id="lobbyPage" class="page">
+                <h2>로비 페이지</h2>
+            </div>
+
             <div id="gamePage" class="page">
                 <h2>게임페이지</h2>
                 <div class="game-container">
