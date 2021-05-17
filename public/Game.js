@@ -4,7 +4,8 @@ import { Block } from '/Block.js';
 export class Game {
     static instance = null;
 
-    constructor() {
+    constructor(socket) {
+        this.socket = socket;
         this.canvas = document.querySelector("#gameCanvas");
         this.ctx = this.canvas.getContext("2d");
         this.frame = null;
@@ -108,6 +109,13 @@ export class Game {
                 ++i;
             }
         }
+
+        let sendData = [];
+        for (let i = 0; i < this.arr.length; ++i) {
+            sendData.push(this.arr[i].map(x => ({ color: x.color, fill: x.fill })));
+        }
+
+        console.log(sendData);
     }
 
     addScore() {

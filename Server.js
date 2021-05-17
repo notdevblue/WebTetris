@@ -3,6 +3,7 @@ const http = require('http');
 const socketio = require('socket.io');
 const path = require('path');
 const { Query, Pool } = require('./DB.js');
+const State = require("./State.js");
 
 const app = new express(); // 익스프레스 웹서버 열음
 const server = http.createServer(app); // 웹서버에 익스프레스 붙임
@@ -15,8 +16,32 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, "views", "index.html"));
 });
 
+let roomList = [
+    //{ name: '', roomName: 1, number: 1 }
+];
+
 io.on("connect", socket => {
     console.log(`서버에 새로운 소켓이 착륙했어요 : ${socket.id}`);
+    socket.state = State.IN_LOGIN;
+
+    socket.on("disconnecting", () => {
+        console.log(`${socket.id}님이 떠나셨어요.`);
+        if (socket.state === State.IN_GAME || socket.state === State.IN_PLAYING) {
+            let rooms = [...socket.rooms];
+            let targetRoom = rooms.find(x => x !== socket.id);
+            roomList.findIndex(x => x.roomName === targetRoom);
+            roomList[i].number--;
+            if (roomList[idx].number <= 0) {
+                roomList.splice(idx, 1); // 해당방 제거
+            } else if (socket.state === State.IN_GAME) {
+                io.to(roomList[idx].roomName).meit("leave-player", { isAdmin: true });
+            } else if (socket.state === State.IN_PLAYING) {
+                io.to(roomList[idx].roomName).meit("leave-player", { isAdmin: false });
+                // 승패 따른 DB 작업
+            }
+        }
+    });
+
 
     socket.on("login-process", async data => {
         const { email, pw } = data;
@@ -27,8 +52,9 @@ io.on("connect", socket => {
             return;
         }
 
-        socket.emit("login-response", { status: true, msg: "로그인 성공" });
+        socket.emit("login-response", { status: true, msg: "로그인 성공", roomList });
         socket.loginUser = result[0]; // 로그인된 유저를 socket 데이터에 넣어준다.
+        socket.state = State.IN_LOBBY;
 
     });
 
@@ -64,7 +90,69 @@ io.on("connect", socket => {
         return;
 
     });
-})
+
+    socket.on("create-room", data => {
+        if (socket.state !== State.IN_LOBBY) {
+            socket.emit("bad-access", { msg: "잘못된 접근입니다" });
+            return;
+        }
+
+        const { name } = data;
+
+        const roomName = roomList.length < 1 ? 1 : Math.max(...roomList.map(x => x.roomName)) + 1; // 번호만 뽑힘
+        roomList.push({ name, roomName, number: 1 });
+        socket.join(roomName); // 해당 소켓을 해당 룸으로 진입시킴
+
+        socket.state = State.IN_GAME;
+        socket.emit("enter-room");
+
+    });
+
+    socket.on("join-room", data => {
+        if (socket.state !== State.IN_LOBBY) {
+            socket.emit("bad-access", { msg: "잘못된 접근입니다." });
+            return;
+        }
+        const { roomName } = data;
+        let targetRoom = roomList.find(x => x.roomName === roomName);
+
+        if (targetRoom === undefined || targetRoom.number >= 2) {
+            socket.emit("bad-access", { msg: "들어갈 수 없는 방입니다." });
+            return;
+        }
+
+        socket.join(roomName); //해당 방에 조인
+
+        socket.emit("join-room");
+        socket.state = State.IN_GAME;
+        ++targetRoom.number;
+    });
+
+    socket.on("game-start", data => {
+
+        if (socket.state !== State.IN_GAME) {
+            socket.emit("bad-access", { msg: "잘못된 접근입니다." });
+            return;
+        }
+
+        let socketRooms = [...socket.rooms];
+        socketRooms = socketRooms.filter(x => x != socket.id);
+
+        let room = socketRooms.find(x => x != socket.id);
+        let targetRoom = roomList.find(x => x.roomName === room);
+        if (targetRoom === undefined || targetRoom.number < 2) {
+            socket.emit("bad-access", { msg: "시작할 수 없는 상태입니다." });
+            return;
+        }
+
+        socket.state = State.IN_PLAYING;
+        io.to(room).emit("game-start");
+    });
+
+    socket.on("in-playing", data => {
+        socket.state = State.IN_PLAYING;
+    })
+});
 
 
 server.listen(56789, () => {
