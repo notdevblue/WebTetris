@@ -1,4 +1,5 @@
 import { Game } from '/Game.js';
+import { $ } from '/query.js';
 
 class App {
     constructor() {
@@ -42,6 +43,16 @@ class App {
             this.createRoom();
         });
 
+        $("#btnLobby").addEventListener("click", e => {
+            this.socket.emit("goto-lobby");
+            this.pageContainer.style.left = "-1024px";
+            this.socket.emit("room-list"); // 방정보 요청
+        });
+
+        $("#btnRefresh").addEventListener("click", e => {
+            this.socket.emit("room-list");
+        });
+
         document.addEventListener("keydown", e => {
             if (e.keyCode == 81) {
                 this.debug("test", "test");
@@ -76,20 +87,14 @@ class App {
                 $("#loginPassword").value = "";
                 this.pageContainer.style.left = "-1024px";
 
-                const roomBox = $("#roomListBox");
-                roomBox.innerHTML = "";
-                data.roomList.forEach(room => {
-                    let div = document.createElement("div");
-                    div.classList.add("room");
-                    div.innerHTML = `<span class="name">${room.name}</span>
-                                    <span class="number">${room.number}</span>`;
-                    div.addEventListener("click", e => {
-                        this.socket.emit("join-room", { roomName: room.roomName });
-                    });
+                this.makeRoomData(data.roomList);
 
-                    roomBox.appendChild(div);
-                });
             }
+        });
+
+        this.socket.on("room-list", data => {
+            const { roomList } = data;
+            this.makeRoomData(roomList);
         });
 
         this.socket.on("enter-room", data => {
@@ -109,8 +114,10 @@ class App {
         this.socket.on("game-start", data => {
             this.game.start();
             this.socket.emit("in-playing");
+            document.querySelector("#btnStart").disabled = true;
         });
     }
+
 
     createRoom() {
         let result = prompt("방 이름을 입력하세요.");
@@ -132,15 +139,27 @@ class App {
         this.socket.emit("register-request", { email, name, pw, pwc });
     }
 
+    makeRoomData(roomList) {
+        const roomBox = $("#roomListBox");
+        roomBox.innerHTML = "";
+        roomList.forEach(room => {
+            let div = document.createElement("div");
+            div.classList.add("room");
+            div.innerHTML = `<span class="name">${room.name}</span>
+                                    <span class="number">${room.number}</span>`;
+            div.addEventListener("click", e => {
+                this.socket.emit("join-room", { roomName: room.roomName });
+            });
+
+            roomBox.appendChild(div);
+        });
+    }
+
     debug(id, pw) {
         $("#loginEmail").value = id;
         $("#loginPassword").value = pw;
         $("#btnLogin").click();
     }
-}
-
-function $(css) {
-    return document.querySelector(css);
 }
 
 window.addEventListener("load", e => {

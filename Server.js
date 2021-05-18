@@ -29,14 +29,14 @@ io.on("connect", socket => {
         if (socket.state === State.IN_GAME || socket.state === State.IN_PLAYING) {
             let rooms = [...socket.rooms];
             let targetRoom = rooms.find(x => x !== socket.id);
-            roomList.findIndex(x => x.roomName === targetRoom);
-            roomList[i].number--;
+            let idx = roomList.findIndex(x => x.roomName === targetRoom);
+            roomList[idx].number--;
             if (roomList[idx].number <= 0) {
                 roomList.splice(idx, 1); // 해당방 제거
             } else if (socket.state === State.IN_GAME) {
-                io.to(roomList[idx].roomName).meit("leave-player", { isAdmin: true });
+                io.to(roomList[idx].roomName).emit("leave-player", { isAdmin: true });
             } else if (socket.state === State.IN_PLAYING) {
-                io.to(roomList[idx].roomName).meit("leave-player", { isAdmin: false });
+                io.to(roomList[idx].roomName).emit("leave-player", { isAdmin: false });
                 // 승패 따른 DB 작업
             }
         }
@@ -151,9 +151,55 @@ io.on("connect", socket => {
 
     socket.on("in-playing", data => {
         socket.state = State.IN_PLAYING;
-    })
+    });
+
+    socket.on("game-data", data => {
+        if (socket.state !== State.IN_PLAYING) {
+            socket.emit("bad-access", { msg: "잘못된 접근입니다." });
+            return;
+        }
+
+        let room = findRoom(socket);
+        data.sender = socket.id;
+        socket.broadcast.to(room).emit("game-data", data); // 나를 제외한 사람들
+    });
+
+    socket.on("remove-line", data => {
+        if (socket.state !== State.IN_PLAYING) {
+            socket.emit("bad-access", { msg: "잘못된 접근입니다." });
+            return;
+        }
+
+        let room = findRoom(socket);
+        data.sender = socket.id;
+        socket.broadcast.to(room).emit("game-data", data); // 나를 제외한 사람들     
+        socket.broadcast.to(room).emit("remove-line", data);
+    });
+
+    socket.on("game-lose", data => {
+        let room = findRoom(socket);
+        socket.broadcast.to(room).emit("game-win");
+    });
+
+    socket.on("goto-lobby", data => {
+        socket.state = State.IN_LOBBY;
+        let room = findRoom(socket);
+        let idx = roomList.findIndex(x => x.roomName === room);
+        --roomList[idx].number;
+        if (roomList[idx].number <= 0) {
+            roomList.splice(idx, 1);
+        }
+    });
+    socket.on("room-list", data => {
+        socket.emit("room-list", { roomList });
+    });
 });
 
+function findRoom(socket) {
+    let socketRooms = [...socket.rooms];
+    let room = socketRooms.find(x => x != socket.id);
+    return room;
+}
 
 server.listen(56789, () => {
     console.log("server is running on port: 56789");
