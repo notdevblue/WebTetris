@@ -193,3 +193,39 @@
 #otherCanvas {
     border: 1px solid #ddd;
 }
+
+
+/*
+SELECT * FROM matchesData, users WHERE matchesData.host_id = users.id AND matchesData.result = 1 AND users.id = 1
+
+SELECT users.name, users.email, COUNT(*) AS cnt FROM matchesData, users
+WHERE ((matchesData.host_id = users.id AND matchesData.result = 1)
+       OR (matchesData.client_id = users.id AND matchesData.result = 0))
+       AND users.id = 20
+
+SELECT users.name, users.email, COUNT(*) AS cnt FROM matchesData, users
+WHERE ((matchesData.host_id = users.id AND matchesData.result = 0)
+       OR (matchesData.client_id = users.id AND matchesData.result = 1))
+       AND users.id = 20
+
+       SELECT users.email, COUNT(*) AS cnt FROM matchesData, users
+WHERE ((matchesData.host_id = users.id AND matchesData.result = 1)
+       OR (matchesData.client_id = users.id AND matchesData.result = 0))
+       AND users.id = 20
+
+*/
+
+
+/*SELECT host_id, COUNT(*) FROM matchesData GROUP BY host_id*/
+
+
+/*SELECT client_id, COUNT(*) FROM matchesData GROUP BY client_id*/
+
+.menu-bar {
+    padding: 25px;
+    margin: 20px 0;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    display: flex;
+    justify-content: flex-end;
+}

@@ -37,6 +37,7 @@ export class Game {
 
         if (isWin) {
             this.gameOverPanel.querySelector(".title").innerHTML = "You Win";
+            this.socket.emit("game-won");
         } else {
             this.gameOverPanel.querySelector(".title").innerHTML = "You Lose";
             this.socket.emit("game-lose");
@@ -82,20 +83,15 @@ export class Game {
 
         this.scoreBox.innerHTML = `${this.score} 점`;
 
-        this.player.render(this.ctx);
+        if (this.player !== null) {
+            this.player.render(this.ctx);
+        }
+
     }
 
-    start() {
+    reset() {
+        this.gameOverPanel.classList.remove('on');
         this.gameOver = false;
-        this.gameOverPanel.classList.remove("on");
-        if (this.frame != null) {
-            clearInterval(this.frame);
-        }
-        this.frame = setInterval(() => {
-            this.update();
-            this.render();
-        }, 1000 / 30);
-
         this.arr = [];
         for (let i = 0; i < 20; i++) {
             let row = [];
@@ -104,6 +100,20 @@ export class Game {
             }
             this.arr.push(row);
         }
+
+        this.render();
+    }
+
+    start() {
+        if (this.frame != null) {
+            clearInterval(this.frame);
+        }
+        this.frame = setInterval(() => {
+            this.update();
+            this.render();
+        }, 1000 / 30);
+
+
 
         //this.debug();
         this.player = new Player();

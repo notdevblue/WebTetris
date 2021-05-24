@@ -53,6 +53,10 @@ class App {
             this.socket.emit("room-list");
         });
 
+        $("#btnRank").addEventListener("click", e => {
+            this.socket.emit('rank-list');
+        });
+
         document.addEventListener("keydown", e => {
             if (e.keyCode == 81) {
                 this.debug("test", "test");
@@ -99,12 +103,15 @@ class App {
 
         this.socket.on("enter-room", data => {
             this.pageContainer.style.left = "-2048px";
+            this.game.reset();
+            $("#btnStart").disabled = false;
         });
 
         this.socket.on("join-room", data => {
             this.pageContainer.style.left = "-2048px";
             //$("#btnStart").style.visibility = "hidden";
             $("#btnStart").disabled = true;
+            this.game.reset();
         });
 
         this.socket.on("bad-access", data => {
@@ -116,6 +123,19 @@ class App {
             this.socket.emit("in-playing");
             document.querySelector("#btnStart").disabled = true;
         });
+
+        this.socket.on("rank-list", data => {
+            console.log(data.result);
+            let rankList = $("#rankList");
+            rankList.innerHTML = "";
+            data.result.forEach((x, idx) => {
+                let li = document.createElement("li");
+                li.innerHTML = `${idx + 1}등 ${x.name} : ${x.win} 승 , ${x.lose} 패`;
+            });
+
+
+
+        })
     }
 
 
